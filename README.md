@@ -20,7 +20,7 @@ Public tournament ranking website with shared monthly updates powered by Supabas
 5. Set:
    - `url` to your Supabase project URL
    - `anonKey` to your Supabase anon public key
-   - `redirectTo` to your final public site URL, for example `https://yourname.github.io/titan-cup-series/`
+   - `redirectTo` to `https://qixian0622.github.io/titanCupSeries/`
 
 ## Publishing Publicly
 

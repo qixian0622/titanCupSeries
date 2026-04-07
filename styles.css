@@ -235,6 +235,10 @@ main {
   color: #dffcf3;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .status-banner.connected {
   background: rgba(92, 242, 198, 0.1);
   border-color: rgba(92, 242, 198, 0.22);
@@ -294,6 +298,50 @@ main {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+.search-panel,
+.organizer-entry,
+.admin-panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.search-panel {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  padding: 18px;
+  margin-bottom: 20px;
+  align-items: end;
+}
+
+.search-panel h3 {
+  margin: 8px 0 0;
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+}
+
+.search-label {
+  margin: 0;
+}
+
+.organizer-shell {
+  align-self: start;
+}
+
+.organizer-entry {
+  padding: 18px;
+}
+
+.admin-panel {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.admin-tools {
+  margin-top: 20px;
 }
 
 .section-head {
@@ -492,7 +540,8 @@ input:focus {
 @media (max-width: 920px) {
   .hero,
   .content-grid,
-  .podium {
+  .podium,
+  .search-panel {
     grid-template-columns: 1fr;
   }
 

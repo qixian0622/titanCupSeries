@@ -18,6 +18,9 @@ const historyList = document.getElementById("historyList");
 const rankingForm = document.getElementById("rankingForm");
 const authForm = document.getElementById("authForm");
 const signOutButton = document.getElementById("signOutButton");
+const searchInput = document.getElementById("searchInput");
+const toggleAdminButton = document.getElementById("toggleAdminButton");
+const adminPanel = document.getElementById("adminPanel");
 const lastUpdated = document.getElementById("lastUpdated");
 const leaderName = document.getElementById("leaderName");
 const leaderPoints = document.getElementById("leaderPoints");
@@ -46,6 +49,8 @@ const supabase =
 
 let currentUser = null;
 let currentMode = supabase ? "supabase" : "demo";
+let isAdminPanelOpen = false;
+let latestHistory = [];
 
 function isLocalhostHost(hostname) {
   return hostname === "localhost" || hostname === "127.0.0.1";
@@ -148,11 +153,16 @@ function renderPodium(standings) {
 }
 
 function renderStandings(standings) {
-  standingsBody.innerHTML = standings
+  const query = searchInput.value.trim().toLowerCase();
+  const filtered = query
+    ? standings.filter((entry) => entry.name.toLowerCase().includes(query))
+    : standings;
+
+  standingsBody.innerHTML = filtered
     .map(
       (entry, index) => `
         <tr>
-          <td>#${index + 1}</td>
+          <td>#${standings.indexOf(entry) + 1}</td>
           <td>${entry.name}</td>
           <td>${entry.points}</td>
           <td>${formatMonth(entry.lastMonth)} - #${entry.lastPlacement}</td>
@@ -160,6 +170,14 @@ function renderStandings(standings) {
       `
     )
     .join("");
+
+  if (!filtered.length) {
+    standingsBody.innerHTML = `
+      <tr>
+        <td colspan="4">No player or team matched your search.</td>
+      </tr>
+    `;
+  }
 }
 
 function renderHistory(history) {
@@ -202,6 +220,7 @@ function renderMeta(standings, history) {
 }
 
 function renderAll(history) {
+  latestHistory = history;
   const standings = deriveStandings(history);
   renderPodium(standings);
   renderStandings(standings);
@@ -218,6 +237,8 @@ function updateAuthUi() {
   const canEdit = currentMode === "demo" || Boolean(currentUser);
   rankingForm.querySelector("button[type='submit']").disabled = !canEdit;
   liveUrlValue.textContent = getLiveRedirectUrl();
+  adminPanel.classList.toggle("hidden", !isAdminPanelOpen);
+  toggleAdminButton.textContent = isAdminPanelOpen ? "Hide Organizer Tools" : "Open Organizer Tools";
 
   if (currentMode === "demo") {
     authStatus.textContent =
@@ -457,6 +478,15 @@ signOutButton.addEventListener("click", async () => {
   await supabase.auth.signOut();
   currentUser = null;
   updateAuthUi();
+});
+
+toggleAdminButton.addEventListener("click", () => {
+  isAdminPanelOpen = !isAdminPanelOpen;
+  updateAuthUi();
+});
+
+searchInput.addEventListener("input", () => {
+  renderAll(latestHistory);
 });
 
 rankingForm.addEventListener("submit", async (event) => {

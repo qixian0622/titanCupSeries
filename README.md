@@ -20,7 +20,7 @@ Public tournament ranking website with shared monthly updates powered by Supabas
 5. Set:
    - `url` to your Supabase project URL
    - `anonKey` to your Supabase anon public key
-   - `redirectTo` to `https://qixian0622.github.io/titanCupSeries/`
+   - `redirectTo` to `https://titancupseries.com/`
 
 ## Publishing Publicly
 
@@ -45,12 +45,15 @@ Public tournament ranking website with shared monthly updates powered by Supabas
 
 ## Custom Domain
 
-1. Buy or use a domain you control, for example `titancupseries.com`.
-2. In GitHub `Settings > Pages`, enter that domain in `Custom domain`.
-3. In your domain provider, point the domain to GitHub Pages.
-4. If you use a root domain, add GitHub Pages A records.
-5. If you use a subdomain like `rankings.titancupseries.com`, add a CNAME record pointing to `qixian0622.github.io`.
-6. After the custom domain works, update `redirectTo` in `supabase-config.js` to your new final domain.
+1. Buy or use the domain `titancupseries.com`.
+2. In GitHub `Settings > Pages`, enter `titancupseries.com` in `Custom domain`.
+3. In your domain provider, add A records for `@` to:
+   - `185.199.108.153`
+   - `185.199.109.153`
+   - `185.199.110.153`
+   - `185.199.111.153`
+4. Add a CNAME record for `www` pointing to `qixian0622.github.io`.
+5. In Supabase `Authentication > URL Configuration`, set the site URL and redirect URL to `https://titancupseries.com/`.
 
 ## Demo Mode
 

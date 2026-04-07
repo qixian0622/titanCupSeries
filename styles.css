@@ -258,6 +258,44 @@ main {
   font-weight: 700;
 }
 
+.setup-guide {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.guide-card,
+.live-url-card,
+.csv-example {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.guide-card h3,
+.csv-example-title {
+  margin: 8px 0;
+  font-family: "Sora", sans-serif;
+  font-size: 1rem;
+}
+
+.guide-card p,
+.live-url-card,
+.csv-example code {
+  color: var(--muted);
+}
+
+.guide-step,
+.live-url-label {
+  display: inline-block;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -354,9 +392,16 @@ tbody tr:hover {
 
 .auth-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr) auto auto;
   gap: 12px;
   align-items: end;
+}
+
+.live-url-card strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--text);
+  word-break: break-word;
 }
 
 label {
@@ -431,6 +476,19 @@ input:focus {
   cursor: pointer;
 }
 
+.csv-example {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.csv-example code {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(4, 8, 18, 0.55);
+}
+
 @media (max-width: 920px) {
   .hero,
   .content-grid,
@@ -438,6 +496,7 @@ input:focus {
     grid-template-columns: 1fr;
   }
 
+  .setup-guide,
   .auth-form {
     grid-template-columns: 1fr;
   }

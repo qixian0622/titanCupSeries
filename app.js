@@ -25,6 +25,7 @@ const leaderMonth = document.getElementById("leaderMonth");
 const authStatus = document.getElementById("authStatus");
 const connectionBanner = document.getElementById("connectionBanner");
 const formHint = document.getElementById("formHint");
+const liveUrlValue = document.getElementById("liveUrlValue");
 const exportButton = document.getElementById("exportButton");
 const importInput = document.getElementById("importInput");
 const csvImportInput = document.getElementById("csvImportInput");
@@ -45,6 +46,25 @@ const supabase =
 
 let currentUser = null;
 let currentMode = supabase ? "supabase" : "demo";
+
+function isLocalhostHost(hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function getLiveRedirectUrl() {
+  const currentUrl = `${window.location.origin}${window.location.pathname}`;
+  const configuredUrl = String(supabaseSettings?.redirectTo ?? "").trim();
+
+  if (!isLocalhostHost(window.location.hostname)) {
+    return currentUrl;
+  }
+
+  if (configuredUrl) {
+    return configuredUrl;
+  }
+
+  return currentUrl;
+}
 
 function formatMonth(monthValue) {
   if (!monthValue) return "No update yet";
@@ -197,6 +217,7 @@ function updateBanner(message, tone = "warning") {
 function updateAuthUi() {
   const canEdit = currentMode === "demo" || Boolean(currentUser);
   rankingForm.querySelector("button[type='submit']").disabled = !canEdit;
+  liveUrlValue.textContent = getLiveRedirectUrl();
 
   if (currentMode === "demo") {
     authStatus.textContent =
@@ -209,14 +230,14 @@ function updateAuthUi() {
   if (currentUser?.email) {
     authStatus.textContent = `Signed in as ${currentUser.email}. Shared updates are now enabled.`;
     formHint.textContent =
-      "Saving a result updates the shared Supabase database so everyone sees the latest rankings.";
+      "Saving or importing results updates the shared Supabase database so everyone sees the latest rankings.";
     return;
   }
 
   authStatus.textContent =
-    "Sign in with an approved organizer email to update shared rankings. Viewers can still see the public table.";
+    "Sign in with an approved organizer email to unlock save and import actions. Viewers can still see the public table.";
   formHint.textContent =
-    "Without sign-in, the form stays locked to protect your public rankings from unauthorized edits.";
+    "Without sign-in, the form and CSV import stay locked to protect your public rankings from unauthorized edits.";
 }
 
 function getFormResult() {
@@ -416,7 +437,7 @@ authForm.addEventListener("submit", async (event) => {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: supabaseSettings.redirectTo || DEFAULT_REDIRECT
+      emailRedirectTo: getLiveRedirectUrl()
     }
   });
 
@@ -425,7 +446,10 @@ authForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  updateBanner("Magic link sent. Open the email on your phone or browser to sign in.", "connected");
+  updateBanner(
+    `Magic link sent. Open the email and make sure it returns to ${getLiveRedirectUrl()}.`,
+    "connected"
+  );
 });
 
 signOutButton.addEventListener("click", async () => {

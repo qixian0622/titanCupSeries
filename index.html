@@ -82,6 +82,24 @@
               </div>
             </div>
 
+            <div class="setup-guide">
+              <article class="guide-card">
+                <span class="guide-step">Step 1</span>
+                <h3>Sign in as organizer</h3>
+                <p>Use your approved organizer email. The magic link should return to this live website.</p>
+              </article>
+              <article class="guide-card">
+                <span class="guide-step">Step 2</span>
+                <h3>Add one result or import many</h3>
+                <p>Use the monthly form for single updates, or the CSV import tools for full tournament uploads.</p>
+              </article>
+              <article class="guide-card">
+                <span class="guide-step">Step 3</span>
+                <h3>Public rankings refresh</h3>
+                <p>Once saved, standings and the top 3 update for everyone on phone and desktop.</p>
+              </article>
+            </div>
+
             <div class="admin-card">
               <p class="admin-title">Admin access</p>
               <p class="form-hint" id="authStatus">
@@ -98,6 +116,10 @@
                     placeholder="organizer@titancupseries.com"
                   />
                 </label>
+                <div class="live-url-card">
+                  <span class="live-url-label">Magic link return URL</span>
+                  <strong id="liveUrlValue">Loading live site URL...</strong>
+                </div>
                 <button type="submit" class="button button-secondary">
                   Send Magic Link
                 </button>
@@ -206,6 +228,12 @@
           <p class="form-hint">
             CSV columns: <strong>month,name,placement,points</strong>
           </p>
+          <div class="csv-example">
+            <p class="csv-example-title">CSV example</p>
+            <code>month,name,placement,points</code>
+            <code>2026-03,Titan Alpha,1,50</code>
+            <code>2026-03,Nova Strikers,2,35</code>
+          </div>
         </section>
       </main>
     </div>

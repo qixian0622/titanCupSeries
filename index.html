@@ -187,6 +187,13 @@
               Import Rankings
               <input type="file" id="importInput" accept="application/json" />
             </label>
+            <label class="button button-secondary file-button">
+              Import CSV
+              <input type="file" id="csvImportInput" accept=".csv,text/csv" />
+            </label>
+            <button class="button button-secondary" id="downloadCsvTemplateButton">
+              Download CSV Template
+            </button>
             <button class="button button-danger" id="resetButton">
               Reset Demo Data
             </button>
@@ -195,6 +202,9 @@
           <p class="form-hint">
             Export and import help if you want to move the rankings between devices
             before connecting a real database.
+          </p>
+          <p class="form-hint">
+            CSV columns: <strong>month,name,placement,points</strong>
           </p>
         </section>
       </main>

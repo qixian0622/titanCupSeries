@@ -27,6 +27,8 @@ const connectionBanner = document.getElementById("connectionBanner");
 const formHint = document.getElementById("formHint");
 const exportButton = document.getElementById("exportButton");
 const importInput = document.getElementById("importInput");
+const csvImportInput = document.getElementById("csvImportInput");
+const downloadCsvTemplateButton = document.getElementById("downloadCsvTemplateButton");
 const resetButton = document.getElementById("resetButton");
 
 const supabaseSettings = window.TITAN_CUP_SUPABASE ?? null;
@@ -233,6 +235,118 @@ function getFormResult() {
   return result;
 }
 
+function normalizeImportedResult(item) {
+  const normalized = {
+    month: String(item.month ?? "").trim(),
+    name: String(item.name ?? "").trim(),
+    placement: Number(item.placement),
+    points: Number(item.points)
+  };
+
+  if (
+    !normalized.month ||
+    !normalized.name ||
+    Number.isNaN(normalized.placement) ||
+    Number.isNaN(normalized.points)
+  ) {
+    throw new Error("Each row must include month, name, placement, and points.");
+  }
+
+  return normalized;
+}
+
+function parseCsvLine(line) {
+  const values = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    const nextChar = line[index + 1];
+
+    if (char === "\"") {
+      if (inQuotes && nextChar === "\"") {
+        current += "\"";
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      values.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function parseCsvResults(csvText) {
+  const lines = csvText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) {
+    throw new Error("CSV file must include a header row and at least one result row.");
+  }
+
+  const headers = parseCsvLine(lines[0]).map((header) => header.toLowerCase());
+  const expectedHeaders = ["month", "name", "placement", "points"];
+
+  if (expectedHeaders.some((header, index) => headers[index] !== header)) {
+    throw new Error("CSV header must be: month,name,placement,points");
+  }
+
+  return lines.slice(1).map((line) => {
+    const [month, name, placement, points] = parseCsvLine(line);
+    return normalizeImportedResult({ month, name, placement, points });
+  });
+}
+
+async function upsertResults(results) {
+  if (!supabase) {
+    const history = loadLocalHistory();
+
+    results.forEach((result) => {
+      const existingIndex = history.findIndex(
+        (item) => item.month === result.month && item.name.toLowerCase() === result.name.toLowerCase()
+      );
+
+      if (existingIndex >= 0) {
+        history[existingIndex] = result;
+      } else {
+        history.unshift(result);
+      }
+    });
+
+    persistLocalHistory(history);
+    renderAll(history);
+    updateAuthUi();
+    return;
+  }
+
+  const rows = results.map((result) => ({
+    month: monthToDatabaseFormat(result.month),
+    participant_name: result.name,
+    placement: result.placement,
+    points: result.points
+  }));
+
+  const { error } = await supabase.from(SUPABASE_TABLE).upsert(rows, {
+    onConflict: "month,participant_name"
+  });
+
+  if (error) throw error;
+  await loadAndRender();
+}
+
 async function fetchRemoteHistory() {
   const { data, error } = await supabase
     .from(SUPABASE_TABLE)
@@ -285,38 +399,7 @@ async function refreshSession() {
 }
 
 async function saveResult(result) {
-  if (!supabase) {
-    const history = loadLocalHistory();
-    const existingIndex = history.findIndex(
-      (item) => item.month === result.month && item.name.toLowerCase() === result.name.toLowerCase()
-    );
-
-    if (existingIndex >= 0) {
-      history[existingIndex] = result;
-    } else {
-      history.unshift(result);
-    }
-
-    persistLocalHistory(history);
-    renderAll(history);
-    updateAuthUi();
-    return;
-  }
-
-  const { error } = await supabase.from(SUPABASE_TABLE).upsert(
-    {
-      month: monthToDatabaseFormat(result.month),
-      participant_name: result.name,
-      placement: result.placement,
-      points: result.points
-    },
-    {
-      onConflict: "month,participant_name"
-    }
-  );
-
-  if (error) throw error;
-  await loadAndRender();
+  await upsertResults([result]);
 }
 
 authForm.addEventListener("submit", async (event) => {
@@ -399,28 +482,13 @@ importInput.addEventListener("change", async (event) => {
       throw new Error("The import file must be an array of tournament results.");
     }
 
-    if (supabase) {
-      if (!currentUser) {
-        throw new Error("Sign in before importing shared rankings.");
-      }
+    const normalizedResults = parsed.map(normalizeImportedResult);
 
-      const rows = parsed.map((item) => ({
-        month: monthToDatabaseFormat(item.month),
-        participant_name: item.name,
-        placement: item.placement,
-        points: item.points
-      }));
-
-      const { error } = await supabase.from(SUPABASE_TABLE).upsert(rows, {
-        onConflict: "month,participant_name"
-      });
-
-      if (error) throw error;
-      await loadAndRender();
-    } else {
-      persistLocalHistory(parsed);
-      renderAll(parsed);
+    if (supabase && !currentUser) {
+      throw new Error("Sign in before importing shared rankings.");
     }
+
+    await upsertResults(normalizedResults);
 
     updateBanner("Ranking data imported successfully.", "connected");
   } catch (error) {
@@ -429,6 +497,44 @@ importInput.addEventListener("change", async (event) => {
   } finally {
     importInput.value = "";
   }
+});
+
+csvImportInput.addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    if (supabase && !currentUser) {
+      throw new Error("Sign in before importing shared rankings.");
+    }
+
+    const text = await file.text();
+    const results = parseCsvResults(text);
+    await upsertResults(results);
+    updateBanner(`Imported ${results.length} CSV row(s) successfully.`, "connected");
+  } catch (error) {
+    console.error(error);
+    updateBanner(`CSV import failed: ${error.message}`, "error");
+  } finally {
+    csvImportInput.value = "";
+  }
+});
+
+downloadCsvTemplateButton.addEventListener("click", () => {
+  const csvTemplate = [
+    "month,name,placement,points",
+    "2026-03,Titan Alpha,1,50",
+    "2026-03,Nova Strikers,2,35",
+    "2026-03,Iron Pulse,3,25"
+  ].join("\n");
+
+  const blob = new Blob([csvTemplate], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "titan-cup-series-template.csv";
+  anchor.click();
+  URL.revokeObjectURL(url);
 });
 
 resetButton.addEventListener("click", async () => {

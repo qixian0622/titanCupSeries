@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Titan Cup Series Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <span class="brand-mark">TCS</span>
+          <span class="brand-name">Titan Cup Series Admin</span>
+        </nav>
+
+        <div class="hero-copy">
+          <p class="eyebrow">Organizer Control Panel</p>
+          <h1>Manage monthly standings from a separate admin page.</h1>
+          <p class="hero-text">
+            Sign in with your approved organizer email, then save one result or upload a full tournament CSV.
+          </p>
+
+          <div class="hero-actions">
+            <a href="./index.html" class="button button-secondary">Back To Public Rankings</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <p class="hero-card-label">Admin Flow</p>
+          <h2>Login, import, publish</h2>
+          <p class="hero-card-points">3 quick steps</p>
+          <p class="hero-card-meta">Designed for organizer-only updates</p>
+        </div>
+      </header>
+
+      <main>
+        <section class="panel panel-highlight">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Admin Access</p>
+              <h2>Sign in and update rankings</h2>
+            </div>
+            <p class="section-note" id="lastUpdated">Admin tools are ready</p>
+          </div>
+
+          <div class="status-banner" id="connectionBanner">
+            Waiting for Supabase connection...
+          </div>
+
+          <div class="setup-guide">
+            <article class="guide-card">
+              <span class="guide-step">Step 1</span>
+              <h3>Sign in as organizer</h3>
+              <p>Use your approved organizer email. The magic link should return to this admin page.</p>
+            </article>
+            <article class="guide-card">
+              <span class="guide-step">Step 2</span>
+              <h3>Add one result or import many</h3>
+              <p>Use the form for one update, or upload CSV for the whole monthly event.</p>
+            </article>
+            <article class="guide-card">
+              <span class="guide-step">Step 3</span>
+              <h3>Public rankings refresh</h3>
+              <p>Once saved, the public leaderboard updates for everyone automatically.</p>
+            </article>
+          </div>
+
+          <div class="admin-card">
+            <p class="admin-title">Admin access</p>
+            <p class="form-hint" id="authStatus">
+              Sign in with an approved organizer email to update shared rankings.
+            </p>
+
+            <form id="authForm" class="auth-form">
+              <label>
+                Organizer email
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="organizer@titancupseries.com"
+                />
+              </label>
+              <div class="live-url-card">
+                <span class="live-url-label">Magic link return URL</span>
+                <strong id="liveUrlValue">Loading admin URL...</strong>
+              </div>
+              <button type="submit" class="button button-secondary">
+                Send Magic Link
+              </button>
+              <button type="button" class="button button-secondary" id="signOutButton">
+                Sign Out
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Single Update</p>
+                <h2>Save one player result</h2>
+              </div>
+            </div>
+
+            <form id="rankingForm" class="ranking-form">
+              <label>
+                Month
+                <input type="month" id="month" name="month" required />
+              </label>
+
+              <label>
+                Player / Team name
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Example: Titan Alpha"
+                  required
+                />
+              </label>
+
+              <label>
+                Tournament placement
+                <input
+                  type="number"
+                  id="placement"
+                  name="placement"
+                  min="1"
+                  placeholder="1"
+                  required
+                />
+              </label>
+
+              <label>
+                Points earned this month
+                <input
+                  type="number"
+                  id="points"
+                  name="points"
+                  min="0"
+                  placeholder="50"
+                  required
+                />
+              </label>
+
+              <button type="submit" class="button button-primary button-full">
+                Save Monthly Result
+              </button>
+            </form>
+
+            <p class="form-hint" id="formHint">
+              Sign in first, then save a single player or team result.
+            </p>
+          </section>
+
+          <section class="panel utility-panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Bulk Update Tools</p>
+                <h2>Import CSV or export ranking data</h2>
+              </div>
+            </div>
+
+            <div class="utility-actions">
+              <button class="button button-secondary" id="exportButton">
+                Export Rankings
+              </button>
+              <label class="button button-secondary file-button">
+                Import Rankings
+                <input type="file" id="importInput" accept="application/json" />
+              </label>
+              <label class="button button-secondary file-button">
+                Import CSV
+                <input type="file" id="csvImportInput" accept=".csv,text/csv" />
+              </label>
+              <button class="button button-secondary" id="downloadCsvTemplateButton">
+                Download CSV Template
+              </button>
+              <button class="button button-danger" id="resetButton">
+                Reset Demo Data
+              </button>
+            </div>
+
+            <p class="form-hint">
+              CSV columns: <strong>month,name,placement,points</strong>
+            </p>
+            <div class="csv-example">
+              <p class="csv-example-title">CSV example</p>
+              <code>month,name,placement,points</code>
+              <code>2026-03,Titan Alpha,1,50</code>
+              <code>2026-03,Nova Strikers,2,35</code>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./supabase-config.js"></script>
+    <script type="module" src="./admin.js"></script>
+  </body>
+</html>

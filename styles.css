@@ -178,6 +178,11 @@ label {
   width: 100%;
 }
 
+.compact-text {
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
 .hero-card,
 .panel,
 .podium-card,

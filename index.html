@@ -22,10 +22,9 @@
 
         <div class="hero-copy">
           <p class="eyebrow">Monthly Tournament Rankings</p>
-          <h1>Keep every Titan Cup result updated and public in one place.</h1>
+          <h1>Search your Titan Cup ranking in seconds.</h1>
           <p class="hero-text">
-            Track standings after each monthly tournament, spotlight the top 3,
-            and keep fans, players, and organizers aligned on mobile and desktop.
+            Public players only see standings, points, and recent results. Tournament organizers update rankings from a separate admin page.
           </p>
 
           <div class="hero-actions">
@@ -49,11 +48,11 @@
               <p class="section-kicker">Live Table</p>
               <h2>Titan Cup standings</h2>
             </div>
-            <p class="section-note" id="lastUpdated">Updated from browser storage</p>
+            <p class="section-note" id="lastUpdated">Loading rankings...</p>
           </div>
 
           <div class="status-banner" id="connectionBanner">
-            Demo mode is active. Connect Supabase to make rankings public and shared.
+            Loading live rankings...
           </div>
 
           <div class="search-panel" id="player-search">
@@ -90,179 +89,34 @@
         </section>
 
         <section class="content-grid">
-          <section class="panel organizer-shell" id="update-panel">
-            <div class="section-head">
-              <div>
-                <p class="section-kicker">Organizer Access</p>
-                <h2>Admins can open the ranking update tools here</h2>
-              </div>
-            </div>
-
-            <div class="organizer-entry">
-              <p class="form-hint">
-                Public visitors only see standings and search. Organizers can unlock the admin tools below.
-              </p>
-              <button class="button button-secondary" id="toggleAdminButton" type="button">
-                Open Organizer Tools
-              </button>
-            </div>
-
-            <div class="admin-panel hidden" id="adminPanel">
-              <div class="setup-guide">
-                <article class="guide-card">
-                  <span class="guide-step">Step 1</span>
-                  <h3>Sign in as organizer</h3>
-                  <p>Use your approved organizer email. The magic link should return to this live website.</p>
-                </article>
-                <article class="guide-card">
-                  <span class="guide-step">Step 2</span>
-                  <h3>Add one result or import many</h3>
-                  <p>Use the monthly form for single updates, or the CSV import tools for full tournament uploads.</p>
-                </article>
-                <article class="guide-card">
-                  <span class="guide-step">Step 3</span>
-                  <h3>Public rankings refresh</h3>
-                  <p>Once saved, standings and the top 3 update for everyone on phone and desktop.</p>
-                </article>
-              </div>
-
-              <div class="admin-card">
-                <p class="admin-title">Admin access</p>
-                <p class="form-hint" id="authStatus">
-                  Sign in with an approved organizer email to update shared rankings.
-                </p>
-
-                <form id="authForm" class="auth-form">
-                  <label>
-                    Organizer email
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      placeholder="organizer@titancupseries.com"
-                    />
-                  </label>
-                  <div class="live-url-card">
-                    <span class="live-url-label">Magic link return URL</span>
-                    <strong id="liveUrlValue">Loading live site URL...</strong>
-                  </div>
-                  <button type="submit" class="button button-secondary">
-                    Send Magic Link
-                  </button>
-                  <button type="button" class="button button-secondary" id="signOutButton">
-                    Sign Out
-                  </button>
-                </form>
-              </div>
-
-              <form id="rankingForm" class="ranking-form">
-                <label>
-                  Month
-                  <input type="month" id="month" name="month" required />
-                </label>
-
-                <label>
-                  Player / Team name
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Example: Titan Alpha"
-                    required
-                  />
-                </label>
-
-                <label>
-                  Tournament placement
-                  <input
-                    type="number"
-                    id="placement"
-                    name="placement"
-                    min="1"
-                    placeholder="1"
-                    required
-                  />
-                </label>
-
-                <label>
-                  Points earned this month
-                  <input
-                    type="number"
-                    id="points"
-                    name="points"
-                    min="0"
-                    placeholder="50"
-                    required
-                  />
-                </label>
-
-                <button type="submit" class="button button-primary button-full">
-                  Save Monthly Result
-                </button>
-              </form>
-
-              <p class="form-hint" id="formHint">
-                Saving a result adds those points to the selected player or team and
-                refreshes the public standings instantly.
-              </p>
-
-              <div class="utility-panel admin-tools">
-                <div class="section-head">
-                  <div>
-                    <p class="section-kicker">Admin Import Tools</p>
-                    <h2>Bulk upload and export ranking data</h2>
-                  </div>
-                </div>
-
-                <div class="utility-actions">
-                  <button class="button button-secondary" id="exportButton">
-                    Export Rankings
-                  </button>
-                  <label class="button button-secondary file-button">
-                    Import Rankings
-                    <input type="file" id="importInput" accept="application/json" />
-                  </label>
-                  <label class="button button-secondary file-button">
-                    Import CSV
-                    <input type="file" id="csvImportInput" accept=".csv,text/csv" />
-                  </label>
-                  <button class="button button-secondary" id="downloadCsvTemplateButton">
-                    Download CSV Template
-                  </button>
-                  <button class="button button-danger" id="resetButton">
-                    Reset Demo Data
-                  </button>
-                </div>
-
-                <p class="form-hint">
-                  Export and import help if you want to move the rankings between devices
-                  before connecting a real database.
-                </p>
-                <p class="form-hint">
-                  CSV columns: <strong>month,name,placement,points</strong>
-                </p>
-                <div class="csv-example">
-                  <p class="csv-example-title">CSV example</p>
-                  <code>month,name,placement,points</code>
-                  <code>2026-03,Titan Alpha,1,50</code>
-                  <code>2026-03,Nova Strikers,2,35</code>
-                </div>
-              </div>
-            </div>
-          </section>
-
           <section class="panel">
             <div class="section-head">
               <div>
-                <p class="section-kicker">Monthly Log</p>
-                <h2>Recent tournament updates</h2>
+                <p class="section-kicker">Recent Updates</p>
+                <h2>Latest tournament results</h2>
               </div>
             </div>
 
             <div class="history-list" id="historyList"></div>
           </section>
-        </section>
 
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Organizer Login</p>
+                <h2>Admin tools are on a separate page</h2>
+              </div>
+            </div>
+
+            <p class="hero-text compact-text">
+              Players only use this page to view rankings and search their name. Organizers manage tournament updates from the admin page.
+            </p>
+
+            <div class="hero-actions">
+              <a href="./admin.html" class="button button-secondary">Open Admin Page</a>
+            </div>
+          </section>
+        </section>
       </main>
     </div>
 

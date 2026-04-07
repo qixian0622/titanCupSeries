@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Titan Cup Series Rankings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <span class="brand-mark">TCS</span>
+          <span class="brand-name">Titan Cup Series</span>
+        </nav>
+
+        <div class="hero-copy">
+          <p class="eyebrow">Monthly Tournament Rankings</p>
+          <h1>Keep every Titan Cup result updated and public in one place.</h1>
+          <p class="hero-text">
+            Track standings after each monthly tournament, spotlight the top 3,
+            and keep fans, players, and organizers aligned on mobile and desktop.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#standings" class="button button-primary">View Rankings</a>
+            <a href="#update-panel" class="button button-secondary">Update Results</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <p class="hero-card-label">Current Leader</p>
+          <h2 id="leaderName">Titan Alpha</h2>
+          <p id="leaderPoints" class="hero-card-points">120 pts</p>
+          <p id="leaderMonth" class="hero-card-meta">Latest update: March 2026</p>
+        </div>
+      </header>
+
+      <main>
+        <section class="panel panel-highlight" id="standings">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Live Table</p>
+              <h2>Titan Cup standings</h2>
+            </div>
+            <p class="section-note" id="lastUpdated">Updated from browser storage</p>
+          </div>
+
+          <div class="status-banner" id="connectionBanner">
+            Demo mode is active. Connect Supabase to make rankings public and shared.
+          </div>
+
+          <div class="podium" id="podium"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player / Team</th>
+                  <th>Total Points</th>
+                  <th>Last Result</th>
+                </tr>
+              </thead>
+              <tbody id="standingsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <section class="panel" id="update-panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Organizer Panel</p>
+                <h2>Update rankings after a tournament</h2>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <p class="admin-title">Admin access</p>
+              <p class="form-hint" id="authStatus">
+                Sign in with an approved organizer email to update shared rankings.
+              </p>
+
+              <form id="authForm" class="auth-form">
+                <label>
+                  Organizer email
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="organizer@titancupseries.com"
+                  />
+                </label>
+                <button type="submit" class="button button-secondary">
+                  Send Magic Link
+                </button>
+                <button type="button" class="button button-secondary" id="signOutButton">
+                  Sign Out
+                </button>
+              </form>
+            </div>
+
+            <form id="rankingForm" class="ranking-form">
+              <label>
+                Month
+                <input type="month" id="month" name="month" required />
+              </label>
+
+              <label>
+                Player / Team name
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Example: Titan Alpha"
+                  required
+                />
+              </label>
+
+              <label>
+                Tournament placement
+                <input
+                  type="number"
+                  id="placement"
+                  name="placement"
+                  min="1"
+                  placeholder="1"
+                  required
+                />
+              </label>
+
+              <label>
+                Points earned this month
+                <input
+                  type="number"
+                  id="points"
+                  name="points"
+                  min="0"
+                  placeholder="50"
+                  required
+                />
+              </label>
+
+              <button type="submit" class="button button-primary button-full">
+                Save Monthly Result
+              </button>
+            </form>
+
+            <p class="form-hint" id="formHint">
+              Saving a result adds those points to the selected player or team and
+              refreshes the public standings instantly.
+            </p>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Monthly Log</p>
+                <h2>Recent tournament updates</h2>
+              </div>
+            </div>
+
+            <div class="history-list" id="historyList"></div>
+          </section>
+        </section>
+
+        <section class="panel utility-panel">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Data Tools</p>
+              <h2>Manage and share ranking data</h2>
+            </div>
+          </div>
+
+          <div class="utility-actions">
+            <button class="button button-secondary" id="exportButton">
+              Export Rankings
+            </button>
+            <label class="button button-secondary file-button">
+              Import Rankings
+              <input type="file" id="importInput" accept="application/json" />
+            </label>
+            <button class="button button-danger" id="resetButton">
+              Reset Demo Data
+            </button>
+          </div>
+
+          <p class="form-hint">
+            Export and import help if you want to move the rankings between devices
+            before connecting a real database.
+          </p>
+        </section>
+      </main>
+    </div>
+
+    <template id="historyItemTemplate">
+      <article class="history-item">
+        <div>
+          <p class="history-month"></p>
+          <h3 class="history-name"></h3>
+        </div>
+        <div class="history-stats">
+          <span class="history-placement"></span>
+          <span class="history-points"></span>
+        </div>
+      </article>
+    </template>
+
+    <script src="./supabase-config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -29,6 +29,7 @@ Public tournament ranking website with shared monthly updates powered by Supabas
 3. Set the source to `GitHub Actions`.
 4. Push to the `main` branch.
 5. GitHub Pages will publish the site and give you a public link.
+6. Or deploy the same repo on Netlify and use `https://titancupseries.netlify.app/` as the live site URL.
 
 ## How Admin Updates Work
 
@@ -53,7 +54,7 @@ Public tournament ranking website with shared monthly updates powered by Supabas
    - `185.199.110.153`
    - `185.199.111.153`
 4. Add a CNAME record for `www` pointing to `qixian0622.github.io`.
-5. In Supabase `Authentication > URL Configuration`, set the site URL and redirect URL to `https://titancupseries.com/`.
+5. In Supabase `Authentication > URL Configuration`, set the site URL and redirect URL to `https://titancupseries.netlify.app/` while you are using Netlify.
 
 ## Demo Mode
 
